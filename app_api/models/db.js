@@ -4,7 +4,6 @@ var dbURI = 'mongodb://localhost:27017/loc8r';
 
 mongoose.connect(dbURI);
 
-
 mongoose.connection.on('connected', function () {
     console.log('Mongoose connected to ' + dbURI);
 });
