@@ -2,14 +2,14 @@ var mongoose = require('mongoose');
 
 var Loc = mongoose.model('Location');
 
-var theEarth = (function() {
+var theEarth = (function () {
     var earthRadius = 6371;
 
-    var getDistanceFromRads = function(rads) {
+    var getDistanceFromRads = function (rads) {
         return parseFloat(rads * earthRadius);
     };
 
-    var getRadsFromDistance = function(distance) {
+    var getRadsFromDistance = function (distance) {
         return parseFloat(distance / earthRadius);
     };
 
@@ -19,9 +19,9 @@ var theEarth = (function() {
     }
 })();
 
-var translateGeoResults = function(geoResults) {
+var translateGeoResults = function (geoResults) {
     var locations = [];
-    geoResults.forEach(function(doc) {
+    geoResults.forEach(function (doc) {
         locations.push({
             distance: theEarth.getDistanceFromRads(doc.dis),
             name: doc.obj.name,
@@ -50,7 +50,7 @@ module.exports.locationsListByDistance = function (req, res) {
         maxDistance: theEarth.getRadsFromDistance(maxDistance),
         limit: 10
     };
-    Loc.geoNear(nearPoint, geoOptions, function(err, results, stats) {
+    Loc.geoNear(nearPoint, geoOptions, function (err, results, stats) {
         if (err) {
             sendResponse(res, 404, err);
         } else {
@@ -60,22 +60,7 @@ module.exports.locationsListByDistance = function (req, res) {
 };
 
 module.exports.locationsCreate = function (req, res) {
-    var newLocationObj = {};
-    newLocationObj.name = req.body.name;
-    newLocationObj.address = req.body.address;
-    newLocationObj.facilities = req.body.facilities.split(",");
-    newLocationObj.coords = [parseFloat(req.body.lng), parseFloat(req.body.lat)];
-    newLocationObj.openingTimes = [];
-    var count = 1;
-    while (req.body["days" + count] && req.body["closed" + count]) {
-        newLocationObj.openingTimes.push({
-            days: req.body["days" + count],
-            opening: req.body["opening" + count],
-            closing: req.body["closing" + count],
-            closed: req.body["closed" + count]
-        });
-        count = count + 1;
-    }
+    var newLocationObj = getLocationObjFromRequest(req);
     Loc.create(newLocationObj, function (err, location) {
         if (err) {
             sendResponse(res, 400, err);
@@ -83,6 +68,26 @@ module.exports.locationsCreate = function (req, res) {
             sendResponse(res, 201, location);
         }
     });
+};
+
+var getLocationObjFromRequest = function (req) {
+    var locationObj = {};
+    locationObj.name = req.body.name;
+    locationObj.address = req.body.address;
+    locationObj.facilities = req.body.facilities.split(",");
+    locationObj.coords = [parseFloat(req.body.lng), parseFloat(req.body.lat)];
+    locationObj.openingTimes = [];
+    var count = 1;
+    while (req.body["days" + count] && req.body["closed" + count]) {
+        locationObj.openingTimes.push({
+            days: req.body["days" + count],
+            opening: req.body["opening" + count],
+            closing: req.body["closing" + count],
+            closed: req.body["closed" + count]
+        });
+        count = count + 1;
+    }
+    return locationObj;
 };
 
 module.exports.locationsReadOne = function (req, res) {
@@ -107,11 +112,55 @@ module.exports.locationsReadOne = function (req, res) {
 };
 
 module.exports.locationsUpdateOne = function (req, res) {
-    sendResponse(res, 200, {"status": "success"});
+    if (req.params && req.params.locationid) {
+        Loc.findById(req.params.locationid)
+            .select('-reviews -rating')
+            .exec(function (err, location) {
+                if (!location) {
+                    sendResponse(res, 404, {
+                        "message": "locationid not found"
+                    });
+                    return;
+                } else if (err) {
+                    sendResponse(res, 404, err)
+                    return;
+                }
+                var updatedLocationObj = getLocationObjFromRequest(req);
+                location.name = updatedLocationObj.name;
+                location.address = updatedLocationObj.address;
+                location.facilities = updatedLocationObj.facilities.split(",");
+                location.coords = updatedLocationObj.coords;
+                location.openingTimes = updatedLocationObj.openingTimes;
+                location.save(function(err, location) {
+                    if (err) {
+                        sendResponse(res, 404, err);
+                    } else {
+                        sendResponse(res, 200, location);
+                    }
+                });
+            });
+    } else {
+        sendResponse(res, 404, {
+            "message": "No locationid in request"
+        });
+    }
 };
 
 module.exports.locationsDeleteOne = function (req, res) {
-    sendResponse(res, 200, {"status": "success"});
+    if (req.params && req.params.locationid) {
+        Loc.findByIdAndRemove(req.params.locationid)
+            .exec(function(err, location) {
+                if (err) {
+                    sendResponse(res, 404, err);
+                } else {
+                    sendResponse(res, 204, null);
+                }
+            });
+    } else {
+        sendResponse(res, 404, {
+            "message": "Not found, locationid is required"
+        });
+    }
 };
 
 function sendResponse(res, status, content) {
