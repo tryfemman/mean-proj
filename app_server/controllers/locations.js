@@ -4,13 +4,13 @@ var apiOptions = {
 };
 
 var renderHomepage = function (req, res, responseBody) {
-    var message;
-    if (!(responseBody instanceof Array)) {
-        message = "API lookup error";
-        responseBody = [];
-    } else if (!responseBody.length) {
-        message = "No places found nearby";
-    }
+    // var message;
+    // if (!(responseBody instanceof Array)) {
+    //     message = "API lookup error";
+    //     responseBody = [];
+    // } else if (!responseBody.length) {
+    //     message = "No places found nearby";
+    // }
 
     res.render('location-list', {
         title: 'Loc8r - Find a place to work with wifi',
@@ -19,43 +19,43 @@ var renderHomepage = function (req, res, responseBody) {
             strapLine: 'Find places to work with wifi near you!'
         },
         sidebar: 'Looking for wifi and a seat? Loc8r helps you find places to work when out and about. ' +
-        'Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you\'re looking for.',
-        locations: responseBody,
-        message: message
+        'Perhaps with coffee, cake or a pint? Let Loc8r help you find the place you\'re looking for.'
+        //locations: responseBody,
+        //message: message
     });
 };
 
 module.exports.index = function (req, res) {
-    var path = "/api/locations";
-    var requestOptions = {
-        url: apiOptions.server + path,
-        method: "GET",
-        json: {},
-        qs: {
-            lng: 9.12,
-            lat: 9.12,
-            distance: 20
-        }
-    };
-
-    request(
-        requestOptions, function (err, response, body) {
-            var i, data;
-            data = body;
-            if (response.statusCode === 200 && data.length) {
-                for (i = 0; i < data.length; i++) {
-                    data[i].distance = _formatDistance(data[i].distance);
-                }
-            }
-            renderHomepage(req, res, body);
-        }
-    );
+    // var path = "/api/locations";
+    // var requestOptions = {
+    //     url: apiOptions.server + path,
+    //     method: "GET",
+    //     json: {},
+    //     qs: {
+    //         lng: 9.12,
+    //         lat: 9.12,
+    //         distance: 20
+    //     }
+    // };
+    //
+    // request(
+    //     requestOptions, function (err, response, body) {
+    //         var i, data;
+    //         data = body;
+    //         if (response.statusCode === 200 && data.length) {
+    //             for (i = 0; i < data.length; i++) {
+    //                 data[i].distance = _formatDistance(data[i].distance);
+    //             }
+    //         }
+            renderHomepage(req, res);
+    //     }
+    // );
 };
 
 var _formatDistance = function (distance) {
     var isDistanceNan = isNaN(distance);
     var isDistanceFinite = isFinite(distance);
-    if (distance && !isDistanceNan && isDistanceFinite) {
+    if (distance && _isNumeric(distance)) {
         var numDistance, unit;
         if (distance > 1) {
             numDistance = parseFloat(distance).toFixed(1);
@@ -66,8 +66,14 @@ var _formatDistance = function (distance) {
         }
         return numDistance + unit;
     } else {
-        return '0m';
+        return '?';
     }
+};
+
+var _isNumeric = function(distance) {
+    var isDistanceNan = isNaN(parseFloat(distance));
+    var isDistanceFinite = isFinite(distance);
+    return !isDistanceNan && isDistanceFinite;
 };
 
 var getLocationInfo = function (req, res, callback) {
