@@ -133,7 +133,8 @@ module.exports.addReview = function (req, res) {
 var renderReviewForm = function (req, res, locationDetails) {
     res.render('location-review-form', {
         title: 'Review ' + locationDetails.name + ' on Loc8r',
-        pageHeader: {title: 'Review ' + locationDetails.name }
+        pageHeader: {title: 'Review ' + locationDetails.name},
+        error: req.query.err
     });
 };
 
@@ -152,13 +153,18 @@ module.exports.doAddReview = function (req, res) {
         json: postdata
     };
     console.log(requestOptions);
-    request(requestOptions, function(err, response, body) {
-
-        if (response.statusCode === 201) {
-            res.redirect('/location/' + locationid);
-        } else {
-            _showErrors(req, res, response.statusCode);
-        }
-    });
+    if (!postdata.author || !postdata.rating || !postdata.reviewText) {
+        res.redirect('/location/' + locationid + '/reviews/new?err=val');
+    } else {
+        request(requestOptions, function (err, response, body) {
+            if (response.statusCode === 201) {
+                res.redirect('/location/' + locationid);
+            } else if (response.statusCode === 400 && body.name && body.name === 'ValidationError') {
+                res.redirect('/location/' + locationid + '/reviews/new?err=val');
+            } else {
+                _showErrors(req, res, response.statusCode);
+            }
+        });
+    }
 };
 

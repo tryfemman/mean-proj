@@ -133,7 +133,7 @@ module.exports.locationsUpdateOne = function (req, res) {
                 location.openingTimes = updatedLocationObj.openingTimes;
                 location.save(function(err, location) {
                     if (err) {
-                        sendResponse(res, 404, err);
+                        sendResponse(res, 400, err);
                     } else {
                         sendResponse(res, 200, location);
                     }

@@ -126,7 +126,7 @@ var doUpdateReview = function(req, res, location) {
 
                 location.save(function(err, location) {
                     if (err) {
-                        sendResponse(res, 404, err);
+                        sendResponse(res, 400, err);
                     } else {
                         updateAverageRating(location);
                         sendResponse(res, 200, thisReview);
