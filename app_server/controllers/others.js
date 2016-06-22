@@ -8,3 +8,7 @@ module.exports.about = function(req, res) {
                 'Pellentesque sollicitudin volutpat ullamcorper.'
     })
 };
+
+module.exports.angularApp = function(req, res) {
+    res.render('layout', { title: 'Loc8r' });
+};

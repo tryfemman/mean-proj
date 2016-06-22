@@ -1,0 +1,97 @@
+[
+    {
+        "name": "Bluecup",
+        "address": "12 Dodekanisou, Thessaloniki, 12345",
+        "facilities": [
+            "Coctails",
+            "Beers",
+            "Less premium wifi"
+        ],
+        "coords": [
+            22.935844,
+            40.635854
+        ],
+        "openingTimes": [
+            {
+                "days": "Monday",
+                "closed": true
+            },
+            {
+                "days": "Tuesday - Friday",
+                "opening": "11:00am",
+                "closing": "04:00pm",
+                "closed": false
+            },
+            {
+                "days": "Saturday - Sunday",
+                "opening": "10:00am",
+                "closing": "06:00pm",
+                "closed": false
+            }
+        ]
+    },
+    {
+        "name": "Stavento",
+        "address": "Nikolaou Plastira 20",
+        "coords": [
+            22.949403,
+            40.574445
+        ],
+        "openingTimes": [
+            {
+                "days": "Monday",
+                "closed": true,
+            },
+            {
+                "days": "Tuesday - Friday",
+                "opening": "10:00",
+                "closing": "4:00",
+                "closed": false,
+            },
+            {
+                "days": "Saturday - Sunday",
+                "opening": "10:00",
+                "closing": "6:00",
+                "closed": false,
+            }
+        ],
+        "facilities": [
+            "wifi",
+            "food",
+            "drinks",
+            "coctails"
+        ]
+    },
+    {
+        "name": "Mistral",
+        "address": "Aiolias 1",
+        "coords": [
+            22.956439,
+            40.568187
+        ],
+        "openingTimes": [
+            {
+                "days": "Monday",
+                "closed": true,
+            },
+            {
+                "days": "Tuesday - Friday",
+                "opening": "10:00",
+                "closing": "4:00",
+                "closed": false,
+            },
+            {
+                "days": "Saturday - Sunday",
+                "opening": "10:00",
+                "closing": "8:00",
+                "closed": false,
+            }
+        ],
+        "facilities": [
+            "wifi",
+            "beers",
+            "coctails",
+            "coffee"
+        ]
+    }
+]

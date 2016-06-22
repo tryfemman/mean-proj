@@ -21,15 +21,17 @@ html(ng-app='loc8rApp')
               a(href='/about/') About
 
     .container
-      block content
+      div(ng-view)
+        block content
 
       footer
         .row
           .col-xs-12
             small &copy; Temma 2016
 
-  script(src='/javascripts/angular/angular.min.js')
-  script(src='/javascripts/angular/loc8rApp.js')
   script(src='/javascripts/jquery-1.12.4.min.js')
   script(src='/bootstrap/js/bootstrap.min.js')
+  script(src='/javascripts/angular/angular.min.js')
+  script(src='/lib/angular-route.min.js')
   script(src='/javascripts/validation.js')
+  script(src='/app.js')
