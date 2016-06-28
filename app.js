@@ -24,6 +24,7 @@ var clientFiles = [
     'app_client/home/home.controller.js',
     'app_client/about/about.controller.js',
     'app_client/locationDetails/locationDetails.controller.js',
+    'app_client/reviewModal/reviewModal.controller.js',
     'app_client/common/services/geolocation.service.js',
     'app_client/common/services/loc8rData.service.js',
     'app_client/common/directives/ratingStars/ratingStars.directive.js',

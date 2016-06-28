@@ -4,12 +4,19 @@
         var locationsByCoords = function (lat, lng) {
             return $http.get('/api/locations?lng=' + lng + '&lat=' + lat + '&distance=20');
         };
+
         var locationById = function(locationId) {
             return $http.get('/api/locations/' + locationId);
         };
+
+        var addReviewById = function(locationId, data) {
+            return $http.post('/api/locations/' + locationId + '/reviews', data);
+        };
+
         return {
             locationsByCoords: locationsByCoords,
-            locationById: locationById
+            locationById: locationById,
+            addReviewById: addReviewById
         };
     }
 
