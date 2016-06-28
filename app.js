@@ -22,10 +22,13 @@ app.set('view engine', 'jade');
 var clientFiles = [
     'app_client/app.js',
     'app_client/home/home.controller.js',
+    'app_client/about/about.controller.js',
+    'app_client/locationDetails/locationDetails.controller.js',
     'app_client/common/services/geolocation.service.js',
     'app_client/common/services/loc8rData.service.js',
     'app_client/common/directives/ratingStars/ratingStars.directive.js',
     'app_client/common/filters/formatDistance.filter.js',
+    'app_client/common/filters/addHtmlLineBreaks.filter.js',
     'app_client/common/directives/genericFooter/genericFooter.directive.js',
     'app_client/common/directives/navigation/navigation.directive.js',
     'app_client/common/directives/pageHeader/pageHeader.directive.js'

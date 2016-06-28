@@ -4,8 +4,12 @@
         var locationsByCoords = function (lat, lng) {
             return $http.get('/api/locations?lng=' + lng + '&lat=' + lat + '&distance=20');
         };
+        var locationById = function(locationId) {
+            return $http.get('/api/locations/' + locationId);
+        };
         return {
-            locationsByCoords: locationsByCoords
+            locationsByCoords: locationsByCoords,
+            locationById: locationById
         };
     }
 
