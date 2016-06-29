@@ -64,6 +64,13 @@ app.use(express.static(path.join(__dirname, 'app_client')));
 app.use(passport.initialize());
 
 
+app.use(function (err, req, res, next) {
+    if (err && err.name === 'UnauthorizedError') {
+        res.status(401);
+        res.json({ "message": err.name + ": " + err.message })
+    }
+});
+
 //app.use('/', routes);
 app.use('/api', routesApi);
 app.use('/users', users);
