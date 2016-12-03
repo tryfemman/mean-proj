@@ -1,10 +1,14 @@
 (function () {
     angular.module('loc8rApp').controller('locationDetailsCtrl', locationDetailsCtrl);
 
-    locationDetailsCtrl.$inject = ['$routeParams', '$uibModal', 'loc8rData'];
-    function locationDetailsCtrl($routeParams, $uibModal, loc8rData) {
+    locationDetailsCtrl.$inject = ['$routeParams', '$uibModal', '$location', 'loc8rData', 'authentication'];
+    function locationDetailsCtrl($routeParams, $uibModal, $location, loc8rData, authentication) {
         var vm = this;
         vm.locationid = $routeParams.locationid;
+
+        vm.isLoggedIn = authentication.isLoggedIn();
+
+        vm.currentPath = $location.path();
 
         vm.popupReviewForm = function () {
             var modalInstance = $uibModal.open(

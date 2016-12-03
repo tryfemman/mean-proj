@@ -1,7 +1,8 @@
 var mongoose = require('mongoose');
 var Loc = mongoose.model('Location');
+var User = mongoose.model('User');
 
-var actUponSpecificLocation = function (req, res, locationAction) {
+var actUponSpecificLocation = function (req, res, locationAction, userName) {
     var locationid = req.params.locationid;
     if (locationid) {
         Loc.findById(locationid)
@@ -16,7 +17,7 @@ var actUponSpecificLocation = function (req, res, locationAction) {
                     sendResponse(res, 400, err);
                     return;
                 }
-                locationAction(req, res, location);
+                locationAction(req, res, location, userName);
             });
     } else {
         sendResponse(res, 404, {
@@ -51,13 +52,34 @@ function sendResponse(res, status, content) {
     res.json(content);
 }
 
-module.exports.reviewsCreate = function (req, res) {
-    actUponSpecificLocation(req, res, doAddReview);
+
+var getAuthor = function (req, res, callback) {
+    if (req.payload && req.payload.email) {
+        User.findOne({email: req.payload.email})
+            .exec(function (err, user) {
+                if (!user) {
+                    sendResponse(res, 404, {
+                        "message": "User not found"
+                    });
+                } else if (err) {
+                    console.log(err);
+                    sendResponse(res, 404, err);
+                } else {
+                    callback(req, res, user.name);
+                }
+            });
+    }
 };
 
-var doAddReview = function (req, res, location) {
+module.exports.reviewsCreate = function (req, res) {
+    getAuthor(req, res, function (req, res, userName) {
+        actUponSpecificLocation(req, res, doAddReview, userName);
+    });
+};
+
+var doAddReview = function (req, res, location, author) {
     location.reviews.push({
-        author: req.body.author,
+        author: author,
         rating: req.body.rating,
         reviewText: req.body.reviewText
     });
@@ -114,7 +136,7 @@ module.exports.reviewsUpdateOne = function (req, res) {
     actUponSpecificLocation(req, res, doUpdateReview);
 };
 
-var doUpdateReview = function(req, res, location) {
+var doUpdateReview = function (req, res, location) {
     var thisReview;
     if (req.params.reviewid) {
         if (location.reviews && location.reviews.length > 0) {
@@ -124,7 +146,7 @@ var doUpdateReview = function(req, res, location) {
                 thisReview.rating = req.body.rating;
                 thisReview.reviewText = req.body.reviewText;
 
-                location.save(function(err, location) {
+                location.save(function (err, location) {
                     if (err) {
                         sendResponse(res, 400, err);
                     } else {
@@ -153,7 +175,7 @@ module.exports.reviewsDeleteOne = function (req, res) {
     actUponSpecificLocation(req, res, doDeleteReview);
 };
 
-var doDeleteReview = function(req, res, location) {
+var doDeleteReview = function (req, res, location) {
     if (req.params.reviewid) {
         if (location && location.reviews && location.reviews.length > 0) {
             if (!location.reviews.id(req.params.reviewid)) {
@@ -162,7 +184,7 @@ var doDeleteReview = function(req, res, location) {
                 });
             } else {
                 location.reviews.id(req.param.reviewid).remove();
-                location.save(function(err, location) {
+                location.save(function (err, location) {
                     if (err) {
                         sendResponse(res, 404, err);
                     } else {

@@ -30,8 +30,10 @@ var clientFiles = [
     'app_client/about/about.controller.js',
     'app_client/locationDetails/locationDetails.controller.js',
     'app_client/reviewModal/reviewModal.controller.js',
+    'app_client/auth/register/register.controller.js',
     'app_client/common/services/geolocation.service.js',
     'app_client/common/services/loc8rData.service.js',
+    'app_client/common/services/authentication.service.js',
     'app_client/common/directives/ratingStars/ratingStars.directive.js',
     'app_client/common/filters/formatDistance.filter.js',
     'app_client/common/filters/addHtmlLineBreaks.filter.js',
@@ -63,14 +65,6 @@ app.use(express.static(path.join(__dirname, 'app_client')));
 
 app.use(passport.initialize());
 
-
-app.use(function (err, req, res, next) {
-    if (err && err.name === 'UnauthorizedError') {
-        res.status(401);
-        res.json({ "message": err.name + ": " + err.message })
-    }
-});
-
 //app.use('/', routes);
 app.use('/api', routesApi);
 app.use('/users', users);
@@ -88,6 +82,12 @@ app.use(function (req, res, next) {
 });
 
 // error handlers
+app.use(function (err, req, res, next) {
+    if (err && err.name === 'UnauthorizedError') {
+        res.status(401);
+        res.json({ "message": err.name + ": " + err.message })
+    }
+});
 
 // development error handler
 // will print stacktrace
